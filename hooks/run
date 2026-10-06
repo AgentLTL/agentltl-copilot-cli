@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Hook launcher: finds the plugin's Python and runs the guard from this plugin directory.
+# $1 is the hook event. The first hook of a plugin version whose dependency pins have no
+# environment yet builds it (see scripts/env.sh), whichever hook that is.
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# shellcheck source=../scripts/env.sh
+source "$root/scripts/env.sh"
+
+py="$(env_python)"
+if [[ -z "$py" ]]; then
+    env_build && py="$(env_python)"
+fi
+if [[ "$1" == "sessionStart" ]]; then
+    env_touch_and_prune
+fi
+if [[ -z "$py" ]]; then
+    # Not installed. Stay out of the way unless rules exist, in which case say so loudly.
+    cat > /dev/null
+    top="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+    if [[ -f "$top/AGENTLTL.yaml" || -f "${COPILOT_HOME:-$HOME/.copilot}/AGENTLTL.yaml" ]]; then
+        msg="AgentLTL for Copilot CLI is not installed (run $root/scripts/setup.sh); rules are not enforced."
+        case "$1" in
+            preToolUse) printf '{"permissionDecision":"ask","permissionDecisionReason":"%s"}' "$msg" ;;
+            sessionStart|postToolUse) printf '{"additionalContext":"%s Tell the user."}' "$msg" ;;
+        esac
+    fi
+    exit 0
+fi
+PYTHONPATH="$root/src${PYTHONPATH:+:$PYTHONPATH}" exec "$py" -m agentltl_copilot.hook "$1"

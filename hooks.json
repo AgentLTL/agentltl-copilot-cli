@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "bash": "\"${PLUGIN_ROOT:-${COPILOT_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${COPILOT_HOME:-$HOME/.copilot}/installed-plugins/agentltl/agentltl}}}\"/hooks/run sessionStart",
+        "timeoutSec": 600
+      }
+    ],
+    "userPromptSubmitted": [
+      {
+        "type": "command",
+        "bash": "\"${PLUGIN_ROOT:-${COPILOT_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${COPILOT_HOME:-$HOME/.copilot}/installed-plugins/agentltl/agentltl}}}\"/hooks/run userPromptSubmitted",
+        "timeoutSec": 60
+      }
+    ],
+    "preToolUse": [
+      {
+        "type": "command",
+        "bash": "\"${PLUGIN_ROOT:-${COPILOT_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${COPILOT_HOME:-$HOME/.copilot}/installed-plugins/agentltl/agentltl}}}\"/hooks/run preToolUse",
+        "timeoutSec": 120
+      }
+    ],
+    "postToolUse": [
+      {
+        "type": "command",
+        "bash": "\"${PLUGIN_ROOT:-${COPILOT_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${COPILOT_HOME:-$HOME/.copilot}/installed-plugins/agentltl/agentltl}}}\"/hooks/run postToolUse",
+        "timeoutSec": 120
+      }
+    ],
+    "postToolUseFailure": [
+      {
+        "type": "command",
+        "bash": "\"${PLUGIN_ROOT:-${COPILOT_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${COPILOT_HOME:-$HOME/.copilot}/installed-plugins/agentltl/agentltl}}}\"/hooks/run postToolUseFailure",
+        "timeoutSec": 120
+      }
+    ],
+    "agentStop": [
+      {
+        "type": "command",
+        "bash": "\"${PLUGIN_ROOT:-${COPILOT_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-${COPILOT_HOME:-$HOME/.copilot}/installed-plugins/agentltl/agentltl}}}\"/hooks/run agentStop",
+        "timeoutSec": 60
+      }
+    ]
+  }
+}

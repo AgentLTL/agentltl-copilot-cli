@@ -1,0 +1,21 @@
+{
+  "name": "agentltl",
+  "description": "AgentLTL for GitHub Copilot CLI: checks every tool call, shell commands included, against AGENTLTL.yaml",
+  "version": "0.1.0",
+  "author": {
+    "name": "lailanelkoussy"
+  },
+  "homepage": "https://agentltl.github.io/harnesses/copilot-cli/",
+  "repository": "https://github.com/AgentLTL/agentltl-copilot-cli",
+  "license": "MIT",
+  "keywords": [
+    "agentltl",
+    "ltl",
+    "guardrails",
+    "hooks",
+    "rules",
+    "shell"
+  ],
+  "hooks": "hooks.json",
+  "skills": "skills/"
+}

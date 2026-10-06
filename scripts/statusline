@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# AgentLTL in Copilot CLI's status line, written by `agentltl statusline --install`.
+# Runs the plugin version Copilot CLI has installed now, so plugin updates don't break it;
+# falls back to the copy that installed it. Reads Copilot CLI's status-line JSON on stdin.
+fallback="__AGENTLTL_ROOT__"
+home="${COPILOT_HOME:-$HOME/.copilot}"
+root=""
+for d in "$home"/installed-plugins/agentltl/agentltl "$home"/installed-plugins/*/agentltl \
+         "$home"/installed-plugins/_direct/agentltl*; do
+    if [[ -x "$d/bin/agentltl" ]]; then root="$d"; break; fi
+done
+[[ -n "$root" ]] || root="$fallback"
+exec "$root/bin/agentltl" statusline
