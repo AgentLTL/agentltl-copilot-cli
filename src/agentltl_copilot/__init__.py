@@ -65,6 +65,7 @@ COPILOT_CLI = Harness(
     shell_tools={"Bash": "command", "powershell": "command"},
     tool_aliases=TOOL_ALIASES,
     builtins={"memory_first": MEMORY_FIRST},
+    project_env="COPILOT_PROJECT_DIR",
     skill="/agentltl-{}",
     memory=_memory,
     memory_note=MEMORY_NOTE,

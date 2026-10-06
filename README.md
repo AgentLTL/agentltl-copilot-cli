@@ -176,9 +176,10 @@ CLI.
   not covered yet.
 - **No note on an allowed call before it runs:** Copilot's `preToolUse` answer has no field for
   it, so a `log` rule's note reaches Copilot with the call's result.
-- **No permission mode in the payload:** set `AGENTLTL_AUTO=1` for unattended runs
-  (`copilot -p ... --allow-all-tools`) so commands the guard can't analyse follow
-  `unparseable.auto`.
+- **Unattended runs:** in `copilot -p`, an `ask` is refused, even with `--allow-all-tools`,
+  since nobody is there to answer. Copilot doesn't tell hooks which mode it runs in: set
+  `AGENTLTL_AUTO=1` for unattended runs so commands the guard can't analyse follow
+  `unparseable.auto` (let through, with a note) instead of being refused.
 - **PowerShell** commands are parsed as shell where they can be; the rest are "commands it
   can't analyse".
 - The rest is as in the [Claude Code plugin](https://agentltl.github.io/harnesses/claude-code/):

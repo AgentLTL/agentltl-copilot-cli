@@ -165,3 +165,56 @@ def test_launcher(project, tmp_path):
     out = subprocess.run([os.path.join(root, "hooks", "run"), "preToolUse"], input=payload,
                          capture_output=True, text=True, env=env, cwd=str(project), check=True)
     assert json.loads(out.stdout)["permissionDecision"] == "deny"
+
+
+# ── what Copilot CLI 1.0.92 actually sends (tests/fixtures/payloads) ──────────
+
+FIXTURE = os.path.join(os.path.dirname(__file__), "fixtures", "payloads", "copilot-1.0.92.json")
+
+
+def test_a_captured_session_replays(tmp_path, monkeypatch):
+    root = tmp_path / "proj"
+    (root / ".git").mkdir(parents=True)
+    (root / "AGENTLTL.yaml").write_text(
+        "use: [no-copilot-coauthor]\n"
+        "rules:\n  - {id: tests, before: [pytest, git_commit]}\n"
+        "  - {id: no-cat-notes, never: {tool: Read, where: {file_path: '*notes.txt'}}}\n")
+    with open(FIXTURE) as fh:
+        events = json.load(fh)["events"]
+    out = []
+    for e in events:
+        payload = json.loads(json.dumps(e["payload"]).replace("/work/proj", str(root)))
+        answer = hook.run(e["event"], payload)
+        if e["event"] == "preToolUse":
+            out.append((payload["toolName"], answer and answer["permissionDecision"]))
+    assert out == [("bash", None), ("create", None), ("edit", None), ("view", "deny"),
+                   ("bash", None), ("skill", None), ("bash", "deny")]
+    calls = store.read(events[0]["payload"]["sessionId"])["completed_tool_calls"]
+    assert [(c["tool_name"], c.get("status")) for c in calls if c["tool_name"] != "cd"] == [
+        ("ls", 0), ("Write", 0), ("Edit", 0), ("Read", 0), ("false", 1), ("skill", 0),
+        ("git_add", None), ("git_commit", 0)]      # a command line's status is its last call's
+
+
+def test_a_shell_exit_code_in_the_text_is_the_status(project):
+    post(project, *bash("pytest"), "1 failed\n<shellId: 4 completed with exit code 1>")
+    post(project, *bash("ls"), "a\n<shellId: 5 completed with exit code 0>")
+    calls = store.read("s1")["completed_tool_calls"]
+    assert [(c["tool_name"], c["status"]) for c in calls] == [("pytest", 1), ("ls", 0)]
+
+
+def test_the_finally_reason_coming_back_as_a_prompt_is_not_the_user(project):
+    (project / "AGENTLTL.yaml").write_text("settings: {finish_retries: 1}\n"
+                                           "rules: [{id: tested, finally: pytest}]")
+    first = event(project, "agentStop", stop_hook_active=False)
+    event(project, "userPromptSubmitted", prompt=first["reason"])     # Copilot's echo
+    assert event(project, "agentStop", stop_hook_active=True) is None   # retries used up
+    event(project, "userPromptSubmitted", prompt="please also fix the docs")
+    assert event(project, "agentStop")["decision"] == "block"           # a new turn
+
+
+def test_the_project_is_copilots_project_dir(project, monkeypatch):
+    sub = project / "src"
+    sub.mkdir()
+    monkeypatch.setenv("COPILOT_PROJECT_DIR", str(project))
+    assert pre(project, *bash("git push"), cwd=str(sub))["permissionDecision"] == "deny"
+    assert store.read("s1")["project_dir"] == str(project)

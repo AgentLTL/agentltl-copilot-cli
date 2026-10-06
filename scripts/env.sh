@@ -1,7 +1,9 @@
 # Sourced by hooks/run, bin/agentltl and scripts/setup.sh: where the plugin's Python lives.
 #
 # Each set of dependency pins (vendor.lock) gets its own virtualenv, venv-<checksum>, in the
-# plugin's data directory (Copilot CLI's PLUGIN_DATA, else ~/.copilot/plugin-data/agentltl).
+# plugin's data directory. Copilot CLI gives hooks COPILOT_PLUGIN_DATA; hooks/run notes it in
+# <plugin>/.data-dir so `agentltl`, run by hand, finds the same environment and state.
+# Without either: ~/.copilot/plugin-data/agentltl.
 # A plugin update that moves a pin builds a new one on its first use, while a session still
 # running the previous version keeps using the old one: the two never rebuild over each
 # other. Environments unused for 14 days are removed.
@@ -10,7 +12,17 @@
 # (the plugin directory).
 
 env_data_dir() {
-    echo "${PLUGIN_DATA:-${COPILOT_PLUGIN_DATA:-${COPILOT_HOME:-$HOME/.copilot}/plugin-data/agentltl}}"
+    local d="${PLUGIN_DATA:-${COPILOT_PLUGIN_DATA:-}}"
+    if [[ -z "$d" && -f "$root/.data-dir" ]]; then d="$(cat "$root/.data-dir")"; fi
+    echo "${d:-${COPILOT_HOME:-$HOME/.copilot}/plugin-data/agentltl}"
+}
+
+env_note_data_dir() {
+    # Called by hooks/run: remember Copilot's data directory for bin/agentltl.
+    local d="${PLUGIN_DATA:-${COPILOT_PLUGIN_DATA:-}}"
+    if [[ -n "$d" && "$(cat "$root/.data-dir" 2>/dev/null)" != "$d" ]]; then
+        printf '%s' "$d" > "$root/.data-dir" 2>/dev/null || true
+    fi
 }
 
 env_venv() {

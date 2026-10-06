@@ -33,8 +33,15 @@ FLAG = "STATUS_LINE"
 
 def data_dir() -> str:
     from . import copilot_home
-    return (os.environ.get("PLUGIN_DATA") or os.environ.get("COPILOT_PLUGIN_DATA")
-            or os.path.join(copilot_home(), "plugin-data", "agentltl"))
+    from .cli import PLUGIN_ROOT
+    found = os.environ.get("PLUGIN_DATA") or os.environ.get("COPILOT_PLUGIN_DATA")
+    if not found:
+        try:          # noted by hooks/run (see scripts/env.sh)
+            with open(os.path.join(PLUGIN_ROOT, ".data-dir"), encoding="utf-8") as fh:
+                found = fh.read().strip()
+        except OSError:
+            pass
+    return found or os.path.join(copilot_home(), "plugin-data", "agentltl")
 
 
 def settings_path() -> str:

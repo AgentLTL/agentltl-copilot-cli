@@ -31,15 +31,16 @@ copilot plugin install agentltl@agentltl
 | `.claude-plugin/plugin.json`, `marketplace.json` | `plugin.json` at the root, `.github/plugin/marketplace.json` |
 | `claude plugin install agentltl@agentltl` | `copilot plugin install agentltl@agentltl` |
 | Hooks: `SessionStart`, `PreToolUse`, `UserPromptSubmit`, `PostToolUse`, `PostToolUseFailure`, `Stop` | `sessionStart`, `preToolUse`, `userPromptSubmitted`, `postToolUse`, `postToolUseFailure`, `agentStop` (`hooks.json`, version 1) |
-| `${CLAUDE_PLUGIN_ROOT}` in hook commands | the plugin root variable when Copilot sets one, else the install path `~/.copilot/installed-plugins/agentltl/agentltl` |
-| `${CLAUDE_PLUGIN_DATA}` | `PLUGIN_DATA`, else `~/.copilot/plugin-data/agentltl` |
+| `${CLAUDE_PLUGIN_ROOT}` in hook commands | `PLUGIN_ROOT` (also `COPILOT_PLUGIN_ROOT`, `CLAUDE_PLUGIN_ROOT`); hooks run with the plugin folder as their working directory, the project is in the payload's `cwd` |
+| `${CLAUDE_PLUGIN_DATA}` | `COPILOT_PLUGIN_DATA`, given to hooks only; `hooks/run` notes it in the plugin folder (`.data-dir`) so `agentltl` run by hand uses the same environment and state |
 | PreToolUse `permissionDecision` deny / ask, with a reason | the same fields, at the top level of the answer |
 | PreToolUse `additionalContext` (a note on a call that goes ahead) | no such field: the note is kept and given with the call's result, in `postToolUse` |
 | `systemMessage` when a `stop` rule fires | no such field: the deny reason says the session is stopped |
-| PostToolUse exit status: `PostToolUseFailure` is status 1 | `postToolUseFailure`, or `toolResult.resultType` other than `success`, is status 1 |
-| Stop `decision: block` for `finally` rules | `agentStop` `decision: block` (Copilot allows 8 in a row; `finish_retries` defaults to 2) |
-| `permission_mode` (auto modes) | not in the payload: `AGENTLTL_AUTO=1` marks an unattended run |
-| `CLAUDE_PROJECT_DIR` | the git root of the working directory |
+| PostToolUse exit status: `PostToolUseFailure` is status 1 | a shell command that exits non-zero still reports `resultType: success`: its status is read from the `<shellId: … completed with exit code N>` line of the output; `postToolUseFailure` is status 1 |
+| Stop `decision: block` for `finally` rules | `agentStop` `decision: block`. Copilot sends the reason back as a new prompt (a `userPromptSubmitted`); the plugin recognises it, so it doesn't count as the user replying and `finish_retries` still bounds the loop |
+| `permission_mode` (auto modes) | not in the payload. In `copilot -p` an `ask` is refused, even with `--allow-all-tools`; `AGENTLTL_AUTO=1` marks an unattended run for `unparseable.auto` |
+| `CLAUDE_PROJECT_DIR` | `COPILOT_PROJECT_DIR`, else the git root of the working directory |
+| (no Claude Code equivalent) | the `skill` tool call that loads a skill; recorded under its own name |
 | Tools `Bash`, `Write`, `Edit`, `Read`, `Glob`, `Grep`, `Task`, `WebFetch` | `bash`, `create`, `edit`, `view`, `glob`, `grep`, `task`, `web_fetch`, mapped onto those names and their arguments, so rules and the library are the same |
 | `~/.claude/AGENTLTL.yaml` | `~/.copilot/AGENTLTL.yaml` |
 | Memory: `CLAUDE.md`, `.claude/rules/`, auto memory | Custom instructions: `.github/copilot-instructions.md`, `.github/instructions/**/*.instructions.md`, `AGENTS.md` (also `CLAUDE.md`, `GEMINI.md`), `~/.copilot/copilot-instructions.md`, `~/.copilot/instructions/` |
@@ -55,10 +56,10 @@ copilot plugin install agentltl@agentltl
 |---|---|---|
 | `sessionStart` | `cwd` | `additionalContext`: the rules in force, one line each (`settings.announce`), or the problems of a broken rule file |
 | `preToolUse` | `sessionId`, `cwd`, `toolName`, `toolArgs` (an object, or a JSON string) | `permissionDecision` `deny` or `ask` and `permissionDecisionReason`; nothing when there is no objection |
-| `postToolUse` | `toolResult.resultType`, `toolResult.textResultForLlm` | `additionalContext`: a note the rules left on the call, a credential warning |
+| `postToolUse` | `toolResult.resultType`, `toolResult.textResultForLlm` (and its exit code line) | `additionalContext`: a note the rules left on the call, a credential warning |
 | `postToolUseFailure` | `error` | the same |
-| `userPromptSubmitted` | | lifts a `stop`; `finally` rules may send Copilot back again |
-| `agentStop` | | `decision: block` with what a `finally` rule still needs |
+| `userPromptSubmitted` | `prompt` | lifts a `stop`; `finally` rules may send Copilot back again (not when the prompt is the plugin's own `agentStop` reason coming back) |
+| `agentStop` | `stop_hook_active` | `decision: block` with what a `finally` rule still needs |
 
 The guard never answers `allow`: silence leaves the call to Copilot's own permissions. An
 internal error in `preToolUse` answers `ask`, and a non-zero exit would deny the call, so a
@@ -94,5 +95,6 @@ git clone --recurse-submodules https://github.com/AgentLTL/agentltl-copilot-cli.
 scripts/setup.sh --dev && .venv/bin/pytest -q
 ```
 
-`tests/fixtures/payloads/` holds payloads captured from Copilot CLI; the tests replay them.
+`tests/fixtures/payloads/` holds a session captured from Copilot CLI 1.0.92; the tests replay
+it.
 `docker/Dockerfile` is an image with Copilot CLI to try the plugin end to end.

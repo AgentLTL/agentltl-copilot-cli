@@ -1,0 +1,273 @@
+{
+ "copilot": "1.0.92",
+ "note": "Payloads captured from Copilot CLI 1.0.92 hooks (copilot -p, --allow-all-tools); long outputs shortened, timestamps zeroed. The hook process runs in the plugin folder with PLUGIN_ROOT, COPILOT_PLUGIN_ROOT, CLAUDE_PLUGIN_ROOT, COPILOT_PLUGIN_DATA, CLAUDE_PLUGIN_DATA and COPILOT_PROJECT_DIR set; PLUGIN_DATA is not.",
+ "events": [
+  {
+   "event": "userPromptSubmitted",
+   "payload": {
+    "sessionId": "49cee2c8-5d55-44c8-87d2-476cb2840676",
+    "cwd": "/work/proj",
+    "timestamp": 0,
+    "prompt": "Do these steps in order..."
+   }
+  },
+  {
+   "event": "sessionStart",
+   "payload": {
+    "sessionId": "49cee2c8-5d55-44c8-87d2-476cb2840676",
+    "cwd": "/work/proj",
+    "timestamp": 0,
+    "source": "new",
+    "initialPrompt": "Do these steps in order..."
+   }
+  },
+  {
+   "event": "preToolUse",
+   "payload": {
+    "sessionId": "49cee2c8-5d55-44c8-87d2-476cb2840676",
+    "cwd": "/work/proj",
+    "timestamp": 0,
+    "toolName": "bash",
+    "toolArgs": {
+     "command": "ls -la",
+     "description": "List files in current directory"
+    }
+   }
+  },
+  {
+   "event": "postToolUse",
+   "payload": {
+    "sessionId": "49cee2c8-5d55-44c8-87d2-476cb2840676",
+    "cwd": "/work/proj",
+    "timestamp": 0,
+    "toolName": "bash",
+    "toolArgs": {
+     "command": "ls -la",
+     "description": "List files in current directory"
+    },
+    "toolResult": {
+     "resultType": "success",
+     "textResultForLlm": "total 16\n-rw-r--r-- 1 root root    3 Oct  6 11:47 notes.txt\n<shellId: 0 completed with exit code 0>"
+    }
+   }
+  },
+  {
+   "event": "preToolUse",
+   "payload": {
+    "sessionId": "49cee2c8-5d55-44c8-87d2-476cb2840676",
+    "cwd": "/work/proj",
+    "timestamp": 0,
+    "toolName": "create",
+    "toolArgs": {
+     "path": "/work/proj/hello.txt",
+     "file_text": "hello"
+    }
+   }
+  },
+  {
+   "event": "postToolUse",
+   "payload": {
+    "sessionId": "49cee2c8-5d55-44c8-87d2-476cb2840676",
+    "cwd": "/work/proj",
+    "timestamp": 0,
+    "toolName": "create",
+    "toolArgs": {
+     "path": "/work/proj/hello.txt",
+     "file_text": "hello"
+    },
+    "toolResult": {
+     "resultType": "success",
+     "textResultForLlm": "Created file /work/proj/hello.txt with 5 characters"
+    }
+   }
+  },
+  {
+   "event": "preToolUse",
+   "payload": {
+    "sessionId": "49cee2c8-5d55-44c8-87d2-476cb2840676",
+    "cwd": "/work/proj",
+    "timestamp": 0,
+    "toolName": "edit",
+    "toolArgs": {
+     "path": "/work/proj/hello.txt",
+     "old_str": "hello",
+     "new_str": "goodbye"
+    }
+   }
+  },
+  {
+   "event": "postToolUse",
+   "payload": {
+    "sessionId": "49cee2c8-5d55-44c8-87d2-476cb2840676",
+    "cwd": "/work/proj",
+    "timestamp": 0,
+    "toolName": "edit",
+    "toolArgs": {
+     "path": "/work/proj/hello.txt",
+     "old_str": "hello",
+     "new_str": "goodbye"
+    },
+    "toolResult": {
+     "resultType": "success",
+     "textResultForLlm": "File /work/proj/hello.txt updated with changes."
+    }
+   }
+  },
+  {
+   "event": "preToolUse",
+   "payload": {
+    "sessionId": "49cee2c8-5d55-44c8-87d2-476cb2840676",
+    "cwd": "/work/proj",
+    "timestamp": 0,
+    "toolName": "view",
+    "toolArgs": {
+     "path": "/work/proj/notes.txt"
+    }
+   }
+  },
+  {
+   "event": "postToolUse",
+   "payload": {
+    "sessionId": "49cee2c8-5d55-44c8-87d2-476cb2840676",
+    "cwd": "/work/proj",
+    "timestamp": 0,
+    "toolName": "view",
+    "toolArgs": {
+     "path": "/work/proj/notes.txt"
+    },
+    "toolResult": {
+     "resultType": "success",
+     "textResultForLlm": "hi\n"
+    }
+   }
+  },
+  {
+   "event": "preToolUse",
+   "payload": {
+    "sessionId": "49cee2c8-5d55-44c8-87d2-476cb2840676",
+    "cwd": "/work/proj",
+    "timestamp": 0,
+    "toolName": "bash",
+    "toolArgs": {
+     "command": "false",
+     "description": "Run a command that exits with failure"
+    }
+   }
+  },
+  {
+   "event": "postToolUse",
+   "payload": {
+    "sessionId": "49cee2c8-5d55-44c8-87d2-476cb2840676",
+    "cwd": "/work/proj",
+    "timestamp": 0,
+    "toolName": "bash",
+    "toolArgs": {
+     "command": "false",
+     "description": "Run a command that exits with failure"
+    },
+    "toolResult": {
+     "resultType": "success",
+     "textResultForLlm": "\n<shellId: 1 completed with exit code 1>"
+    }
+   }
+  },
+  {
+   "event": "preToolUse",
+   "payload": {
+    "sessionId": "49cee2c8-5d55-44c8-87d2-476cb2840676",
+    "cwd": "/work/proj",
+    "timestamp": 0,
+    "toolName": "skill",
+    "toolArgs": {
+     "skill": "probe-skill"
+    }
+   }
+  },
+  {
+   "event": "postToolUse",
+   "payload": {
+    "sessionId": "49cee2c8-5d55-44c8-87d2-476cb2840676",
+    "cwd": "/work/proj",
+    "timestamp": 0,
+    "toolName": "skill",
+    "toolArgs": {
+     "skill": "probe-skill"
+    },
+    "toolResult": {
+     "resultType": "success",
+     "textResultForLlm": "Skill \"probe-skill\" loaded successfully. Follow the instructions in the skill context."
+    }
+   }
+  },
+  {
+   "event": "preToolUse",
+   "payload": {
+    "sessionId": "49cee2c8-5d55-44c8-87d2-476cb2840676",
+    "cwd": "/work/proj",
+    "timestamp": 0,
+    "toolName": "bash",
+    "toolArgs": {
+     "command": "cd /work/proj && git add hello.txt && git commit -m \"add hello\"",
+     "description": "Commit hello.txt to git"
+    }
+   }
+  },
+  {
+   "event": "postToolUse",
+   "payload": {
+    "sessionId": "49cee2c8-5d55-44c8-87d2-476cb2840676",
+    "cwd": "/work/proj",
+    "timestamp": 0,
+    "toolName": "bash",
+    "toolArgs": {
+     "command": "cd /work/proj && git add hello.txt && git commit -m \"add hello\"",
+     "description": "Commit hello.txt to git"
+    },
+    "toolResult": {
+     "resultType": "success",
+     "textResultForLlm": "[main 38a117a] add hello\n 1 file changed, 1 insertion(+)\n create mode 100644 hello.txt\n<shellId: 2 completed with exit code 0>"
+    }
+   }
+  },
+  {
+   "event": "agentStop",
+   "payload": {
+    "sessionId": "49cee2c8-5d55-44c8-87d2-476cb2840676",
+    "cwd": "/work/proj",
+    "timestamp": 0,
+    "transcriptPath": "/root/.copilot/session-state/49cee2c8-5d55-44c8-87d2-476cb2840676/events.jsonl",
+    "stopReason": "end_turn",
+    "stop_hook_active": false
+   }
+  },
+  {
+   "event": "userPromptSubmitted",
+   "payload": {
+    "sessionId": "49cee2c8-5d55-44c8-87d2-476cb2840676",
+    "cwd": "/work/proj",
+    "timestamp": 0,
+    "prompt": "<the agentStop reason>"
+   }
+  },
+  {
+   "event": "agentStop",
+   "payload": {
+    "sessionId": "49cee2c8-5d55-44c8-87d2-476cb2840676",
+    "cwd": "/work/proj",
+    "timestamp": 0,
+    "transcriptPath": "/root/.copilot/session-state/49cee2c8-5d55-44c8-87d2-476cb2840676/events.jsonl",
+    "stopReason": "end_turn",
+    "stop_hook_active": true
+   }
+  },
+  {
+   "event": "sessionEnd",
+   "payload": {
+    "sessionId": "49cee2c8-5d55-44c8-87d2-476cb2840676",
+    "cwd": "/work/proj",
+    "timestamp": 0,
+    "reason": "complete"
+   }
+  }
+ ]
+}
