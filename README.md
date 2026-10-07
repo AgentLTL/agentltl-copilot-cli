@@ -100,7 +100,7 @@ rules:
     why: CI is slow; run the checks locally first.
     mode: warn
   - id: changelog
-    finally: {tool: Edit, where: {file_path: CHANGELOG.md}}
+    finally: {call: {tool: Edit, where: {file_path: CHANGELOG.md}}, since: [Edit, Write]}
     why: Every change gets a CHANGELOG line.
 ```
 
