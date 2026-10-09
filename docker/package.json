@@ -3,6 +3,6 @@
   "private": true,
   "description": "The GitHub Copilot CLI version the plugin is tested with (Dockerfile, e2e.sh). Dependabot proposes each new release as a pull request.",
   "dependencies": {
-    "@github/copilot": "1.0.92"
+    "@github/copilot": "1.0.94"
   }
 }
