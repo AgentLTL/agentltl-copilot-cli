@@ -199,6 +199,12 @@ scripts/setup.sh --dev
 `docker run --rm -it -e COPILOT_GITHUB_TOKEN -v "$PWD":/plugin agentltl-copilot` and, inside,
 `copilot plugin install /plugin`.
 
+`docker/e2e.sh` runs a whole session with no account: Copilot CLI offline on a custom
+provider, a scripted model making the calls in `docker/e2e/script.json`, and a check that the
+rules refused what `docker/e2e/expected.txt` says. The Copilot CLI version it tests is pinned
+in `docker/package.json`; Dependabot proposes each new release as a pull request, and the
+end-to-end workflow flags the ones that break the plugin.
+
 ## Documentation
 
 [agentltl.github.io](https://agentltl.github.io/harnesses/copilot-cli/), and

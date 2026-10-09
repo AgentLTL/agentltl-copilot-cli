@@ -1,0 +1,11 @@
+[
+ {"calls": [{"name": "bash", "args": {"command": "ls", "description": "list"}}]},
+ {"calls": [{"name": "create", "args": {"path": "/work/notes.txt", "file_text": "hello\n"}}]},
+ {"calls": [{"name": "create", "args": {"path": "/work/README.md", "file_text": "overwritten\n"}}]},
+ {"calls": [{"name": "bash", "args": {"command": "sudo ls", "description": "root"}}]},
+ {"calls": [{"name": "bash", "args": {"command": "rm -rf build", "description": "clean"}}]},
+ {"calls": [{"name": "bash", "args": {"command": "git add notes.txt && git commit -q -m 'add notes' -m 'Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>'", "description": "commit"}}]},
+ {"calls": [{"name": "bash", "args": {"command": "git push --force origin main", "description": "push"}}]},
+ {"text": "Done."},
+ {"text": "Done again."}
+]
