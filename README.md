@@ -61,7 +61,13 @@ on Copilot CLI's hooks: the same rule language, the same library, and the same
 
 ## Installation
 
-Requires Python 3.10+, git, and GitHub Copilot CLI.
+Requires Python 3.10+, git, and GitHub Copilot CLI. Paste this into Copilot CLI:
+
+```
+Set up the AgentLTL plugin for me by following https://raw.githubusercontent.com/AgentLTL/agentltl-copilot-cli/main/SETUP.md
+```
+
+Or install manually:
 
 ```bash
 copilot plugin marketplace add AgentLTL/agentltl-copilot-cli
