@@ -1,6 +1,7 @@
 """Copilot CLI's custom instructions as the memory `agentltl memory scan` reads."""
 
 import json
+import os
 
 from agentltl_copilot import cli, memory
 
@@ -15,7 +16,7 @@ def test_sources_are_copilots_instruction_files(tmp_path):
     (root / "sub" / "AGENTS.md").write_text("x")
     (home / ".copilot").mkdir(parents=True)
     (home / ".copilot" / "copilot-instructions.md").write_text("x")
-    got = [(s.path.replace(str(tmp_path) + "/", ""), s.kind, s.target)
+    got = [(s.path.replace(str(tmp_path) + os.sep, "").replace(os.sep, "/"), s.kind, s.target)
            for s in memory.sources(str(root), home=str(home))]
     assert got == [
         ("proj/.github/copilot-instructions.md", "instructions", "project"),
