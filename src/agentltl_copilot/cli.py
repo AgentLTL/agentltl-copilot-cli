@@ -62,6 +62,32 @@ def _statusline(args: argparse.Namespace) -> int:
         print(f"AgentLTL ⚠ {type(exc).__name__}")
     return 0
 
+LINK_MARK = "# agentltl: runs "
+
+
+def _link(target: str, link: str) -> None:
+    """Symlink `link` to `target`. Where symlinks are not allowed (Windows without developer
+    mode or administrator rights), write a small script that runs it instead."""
+    try:
+        os.symlink(target, link)
+        return
+    except (OSError, NotImplementedError):
+        pass
+    posix = target.replace("\\", "/")
+    with open(link, "w", encoding="utf-8", newline="\n") as fh:
+        fh.write(f'#!/usr/bin/env bash\n{LINK_MARK}{posix}\nexec "{posix}" "$@"\n')
+    os.chmod(link, 0o755)
+
+
+def _links_to(link: str, target: str) -> bool:
+    if os.path.realpath(link) == os.path.realpath(target):
+        return True
+    try:
+        with open(link, encoding="utf-8", errors="replace") as fh:
+            return f"{LINK_MARK}{target.replace(chr(92), '/')}\n" in fh.read(4096)
+    except OSError:
+        return False
+
 
 def _install_cli(args: argparse.Namespace) -> int:
     """A link to a small script that runs whichever plugin version is installed now (the
@@ -80,11 +106,11 @@ def _install_cli(args: argparse.Namespace) -> int:
     os.chmod(shim, 0o755)
     link = os.path.join(folder, "agentltl")
     if os.path.lexists(link):
-        if os.path.realpath(link) != os.path.realpath(shim):
+        if not _links_to(link, shim):
             print(f"{link} exists and is not AgentLTL's; nothing changed.", file=sys.stderr)
             return 1
         os.remove(link)
-    os.symlink(shim, link)
+    _link(shim, link)
     on_path = folder in os.environ.get("PATH", "").split(os.pathsep)
     print(f"{link} -> {shim}" + ("" if on_path else f"\n{folder} is not on your PATH yet."))
     return 0
