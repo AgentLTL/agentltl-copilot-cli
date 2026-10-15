@@ -2,6 +2,7 @@
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 
@@ -28,6 +29,12 @@ def project(tmp_path):
     (root / ".git").mkdir(parents=True)
     (root / "AGENTLTL.yaml").write_text(RULES)
     return root
+
+
+
+def _json_path(path):
+    """*path* as it is written inside a JSON string (backslashes escaped)."""
+    return json.dumps(str(path))[1:-1]
 
 
 def event(project, name, tool=None, args=None, **extra):
@@ -162,7 +169,7 @@ def test_launcher(project, tmp_path):
                PYTHONPATH=os.pathsep.join(sys.path))
     payload = json.dumps({"sessionId": "s1", "cwd": str(project), "toolName": "bash",
                           "toolArgs": {"command": "git push"}})
-    out = subprocess.run([os.path.join(root, "hooks", "run"), "preToolUse"], input=payload,
+    out = subprocess.run([shutil.which("bash"), os.path.join(root, "hooks", "run"), "preToolUse"], input=payload,
                          capture_output=True, text=True, env=env, cwd=str(project), check=True)
     assert json.loads(out.stdout)["permissionDecision"] == "deny"
 
@@ -183,7 +190,7 @@ def test_a_captured_session_replays(tmp_path, monkeypatch):
         events = json.load(fh)["events"]
     out = []
     for e in events:
-        payload = json.loads(json.dumps(e["payload"]).replace("/work/proj", str(root)))
+        payload = json.loads(json.dumps(e["payload"]).replace("/work/proj", _json_path(root)))
         answer = hook.run(e["event"], payload)
         if e["event"] == "preToolUse":
             out.append((payload["toolName"], answer and answer["permissionDecision"]))
