@@ -225,3 +225,28 @@ def test_the_project_is_copilots_project_dir(project, monkeypatch):
     monkeypatch.setenv("COPILOT_PROJECT_DIR", str(project))
     assert pre(project, *bash("git push"), cwd=str(sub))["permissionDecision"] == "deny"
     assert store.read("s1")["project_dir"] == str(project)
+
+
+def test_launcher_ignores_the_callers_python_path(tmp_path):
+    """A PYTHONPATH from the user's shell (another project's virtualenv) must not reach the
+    plugin's Python: its packages would shadow the plugin's own."""
+    import pytest
+    if sys.platform == "win32":
+        pytest.skip("the stub interpreter is a shell script")
+    src = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    root = tmp_path / "plugin"
+    shutil.copytree(os.path.join(src, "hooks"), root / "hooks")
+    shutil.copytree(os.path.join(src, "scripts"), root / "scripts")
+    shutil.copy(os.path.join(src, "vendor.lock"), root / "vendor.lock")
+    (root / ".venv" / "bin").mkdir(parents=True)
+    shutil.copy(root / "vendor.lock", root / ".venv" / "vendor.lock")
+    stub = root / ".venv" / "bin" / "python"
+    stub.write_text('#!/bin/sh\necho "[$PYTHONPATH][$PYTHONHOME]" > "$MARK"\n')
+    stub.chmod(0o755)
+    mark = tmp_path / "mark"
+    env = {k: v for k, v in os.environ.items() if k != "AGENTLTL_COPILOT_PYTHON"}
+    env.update(HOME=str(tmp_path / "home"), MARK=str(mark),
+               PYTHONPATH="/elsewhere/site-packages", PYTHONHOME="/elsewhere")
+    subprocess.run([shutil.which("bash"), str(root / "hooks" / "run"), "preToolUse"], input="{}",
+                   capture_output=True, text=True, env=env, cwd=str(tmp_path))
+    assert mark.read_text().strip() == f"[{root}/src][]"
