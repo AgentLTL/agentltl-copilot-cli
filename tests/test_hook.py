@@ -251,7 +251,7 @@ def test_launcher_ignores_the_callers_python_path(tmp_path):
     subprocess.run([shutil.which("bash"), str(root / "hooks" / "run"), "preToolUse"], input="{}",
                    capture_output=True, text=True, env=env, cwd=str(tmp_path))
     assert mark.read_text().strip() == (
-        f"[][][] -I -s {root}/scripts/launch.py agentltl_copilot.hook preToolUse")
+        f"[][][] -I -s -X utf8 {root}/scripts/launch.py agentltl_copilot.hook preToolUse")
 
 
 def _launcher_with_python(tmp_path, project, body):
